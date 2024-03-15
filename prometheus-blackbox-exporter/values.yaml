@@ -13,8 +13,6 @@ prometheus-blackbox-exporter:
       prometheus.io/probe: "blackbox"
 
   podAnnotations:
-    co.elastic.logs/enabled: "true"
-    co.elastic.logs/fileset.stderr: "error"
     prometheus.io/scrape: "true"
     prometheus.io/port: "9115"
     prometheus.io/path: "/metrics"

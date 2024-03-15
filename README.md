@@ -14,5 +14,5 @@ helm upgrade prometheus-blackbox ./prometheus-blackbox-exporter
 # 制造一些workload
 k apply -f workload.yaml
 # 本地访问
-kubectl port-forward service/prometheus-blackbox-exporter  8080:9115
+kubectl port-forward service/prometheus-blackbox-exporter  9115:9115
 ```

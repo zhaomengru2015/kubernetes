@@ -8,7 +8,7 @@ helm repo update
 
 ## 安装
 
-helm install prometheus prometheus-community/kube-prometheus-stack -f value.yaml
+helm install prometheus prometheus-community/kube-prometheus-stack -f prometheus/values.yaml
 
 ## 卸载
 

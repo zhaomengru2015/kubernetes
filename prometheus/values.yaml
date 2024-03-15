@@ -1,16 +1,27 @@
 prometheus:
   prometheusSpec:
+    configMaps:
+    - blackbox-targets
     additionalScrapeConfigs:
     - job_name: blackbox
       metrics_path: /probe
-      params:
-        module: [tcp_connect]
-      static_configs:
-      - targets: ["10.43.152.228:80","127.0.0.1:9090"]
+      file_sd_configs:
+      - files:
+        - '/etc/prometheus/configmaps/blackbox-targets/targets.yaml'
       relabel_configs:
       - source_labels:
         - __address__
         target_label: instance
+      - source_labels:
+        - __address__
+        target_label: host
+        regex: '([^:]+):([0-9]+)?'
+        replacement: '${1}'
+      - source_labels:
+        - __address__
+        target_label: port
+        regex: '([^:]+):([0-9]+)?'
+        replacement: '${2}'
       - source_labels:
         - __address__
         target_label: __param_target
