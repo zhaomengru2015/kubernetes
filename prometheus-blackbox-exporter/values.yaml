@@ -1,0 +1,28 @@
+prometheus-blackbox-exporter:
+  nameOverride: "prometheus-blackbox-exporter"
+  fullnameOverride: "prometheus-blackbox-exporter"
+  pspEnabled: false
+  config:
+    modules:
+      tcp_connect:
+        prober: tcp
+        timeout: 10s
+
+  service:
+    annotations:
+      prometheus.io/probe: "blackbox"
+
+  podAnnotations:
+    co.elastic.logs/enabled: "true"
+    co.elastic.logs/fileset.stderr: "error"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9115"
+    prometheus.io/path: "/metrics"
+
+  resources:
+    limits:
+      memory: 200Mi
+      cpu: 250m
+    requests:
+      memory: 50Mi
+      cpu: 50m

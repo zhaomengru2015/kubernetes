@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blackbox-targets
+  labels:
+    app.kubernetes.io/instance: vm-agent
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: victoria-metrics-agent
+data:
+  targets.yaml: |
+    ---
+    - targets:
+      - 10.43.152.228:80
+      - 127.0.0.1:9090
+      - 110.242.68.66:80
+      - 142.251.111.100:80
+      labels:
+        __param_module: tcp_connect
+        probe: 'true'
