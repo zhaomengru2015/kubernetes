@@ -14,19 +14,23 @@ prometheus:
         target_label: instance
       - source_labels:
         - __address__
-        target_label: host
-        regex: '([^:]+):([0-9]+)?'
+        target_label: instance_host
+        regex: '(?:https?\:\/\/)?([a-zA-Z0-9\.]+)(?::)?([0-9]+)?'
         replacement: '${1}'
       - source_labels:
         - __address__
-        target_label: port
-        regex: '([^:]+):([0-9]+)?'
+        target_label: instance_port
+        regex: '(?:https?\:\/\/)?([a-zA-Z0-9\.]+)(?::)?([0-9]+)?'
         replacement: '${2}'
       - source_labels:
         - __address__
         target_label: __param_target
       - target_label: __address__
         replacement: prometheus-blackbox-exporter:9115
-      - source_labels: [probe]
-        action: keep
-        regex: true
+      # - source_labels: [probe]
+      #   action: keep
+      #   regex: true
+      - source_labels:
+        - __param_module
+        target_label: module
+        replacement: '${1}'

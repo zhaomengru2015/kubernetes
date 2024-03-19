@@ -15,5 +15,16 @@ data:
       - 110.242.68.66:80
       - 142.251.111.100:80
       labels:
-        __param_module: tcp_connect
+        __param_module: tcp_connect1
+    - targets:
+      - https://baidu.com:443
+      - https://google.com:443
+      labels:
+        __param_module: http_2xx
         probe: 'true'
+    - targets:
+      - baidu.com
+      - google.com
+      labels:
+        __param_module: http_2xx
+        target_type: nat
