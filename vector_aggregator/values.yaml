@@ -14,59 +14,63 @@ vector:
     prometheus.io/port: "9598"
     prometheus.io/scrape: "true"
   containerPorts:
+    - name: vector
+      containerPort: 8686
+      protocol: TCP
     - name: metrics
       containerPort: 9598
       protocol: TCP
-    - name: api
-      containerPort: 8686
-      protocol: TCP
-  # customConfig:
-  #   data_dir: /vector-data-dir
-  #   api:
-  #     enabled: false
-  #   # api:
-  #   #   enabled: true
-  #   #   address: 127.0.0.1:8686
-  #   #   playground: false
-  #   sources:
-  #     vector_logs:
-  #       type: http_server
-  #       address: vector-aggregator-haproxy.default.svc.cluster.local:6000
-  #   transforms:
-  #     kubernetes_logs_mutate_fields:
-  #       type: remap
-  #       inputs:
-  #         - vector
-  #       source: |-
-  #         log_message = .message
+  customConfig:
+    data_dir: /vector-data-dir
+    api:
+      enabled: false
+    sources:
+      vector:
+        type: vector
+        address: 0.0.0.0:8686
+        version: "2"
+    transforms:
+      kubernetes_logs_mutate_fields:
+        type: remap
+        inputs:
+          - vector
+        source: |-
+          log_message = .message
 
-  #         # add lf_dc_name field from env var for all logs
-  #         .lf_dc_name = get_env_var!("lf_dc_name")
+          # add lf_dc_name field from env var for all logs
+          .lf_dc_name = get_env_var!("lf_dc_name")
 
-  #         #TODO: mutations for modesecurity logs, is it still needed?
-  #         if .kubernetes.pod_namespace == "ingress-nginx" && contains!(log_message, "modsecurity") {
-  #             .waf = "modsecurity"
-  #         }
-  #   sinks:
-  #     stdout:
-  #       type: console
-  #       inputs: ["vector_logs"]
-  #       rawConfig: |
-  #         target = "stdout"
-  #         encoding = "json"
+          #TODO: mutations for modesecurity logs, is it still needed?
+          if .kubernetes.pod_namespace == "ingress-nginx" && contains!(log_message, "modsecurity") {
+              .waf = "modsecurity"
+          }
+    sinks:
+      stdout:
+        type: console
+        inputs: ["vector"]
+        target: stdout
+        encoding:
+          codec: json
   haproxy:
     enabled: true
-    # existingConfigMap: vector-haproxy
-    # containerPorts:
-    #   - name: vector
-    #     containerPort: 6000
-    #     protocol: TCP
-    # service:
-    #   ports:
-    #     - name: vector
-    #       port: 6000
-    #       protocol: TCP
-    #       targetPort: 6000
+    existingConfigMap: vector-haproxy
+    containerPorts:
+      - name: vector
+        containerPort: 8686
+        protocol: TCP
+      - name: metrics
+        containerPort: 9598
+        protocol: TCP
+    service:
+      ports:
+        - name: vector
+          port: 8686
+          protocol: TCP
+          targetPort: 8686
+        - name: metrics
+          port: 9598
+          protocol: TCP
+          targetPort: 9598
     resources:
       requests:
         cpu: 100m
