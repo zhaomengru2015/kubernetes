@@ -1,0 +1,46 @@
+vector:
+  nameOverride: "vector-agent"
+  fullnameOverride: "vector-agent"
+  role: Agent
+  logLevel: "info"
+  podAnnotations:
+    prometheus.io/port: "9598"
+    prometheus.io/scrape: "true"
+  containerPorts:
+    - name: metrics
+      containerPort: 9598
+      protocol: TCP
+    - name: api
+      containerPort: 8686
+      protocol: TCP
+  customConfig:
+    data_dir: /vector-data-dir
+    api:
+      enabled: true
+      address: 127.0.0.1:8686
+      playground: false
+    sources:
+      kubernetes_pod_logs:
+        type: "kubernetes_logs"
+        max_read_bytes: 100000
+        ignore_older_secs: 86400 # ignore logs older than 1 day
+      vector_monitoring:
+        type: internal_metrics
+
+    transforms:
+      kubernetes_logs_timestamp_added:
+        type: remap
+        inputs:
+          - kubernetes_pod_logs
+        source: |-
+          # add @timestamp field for calculate latency pipeline
+          ."@timestamp"=.timestamp
+
+    sinks:
+      stdout:
+        type: console
+        inputs: ["kubernetes_pod_logs"]
+        encoding:
+          codec: json
+  haproxy:
+    enabled: true
