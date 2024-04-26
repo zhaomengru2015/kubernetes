@@ -1,0 +1,37 @@
+nameOverride: "vector-aggregator"
+fullnameOverride: "vector-aggregator"
+role: Aggregator
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 300m
+    memory: 640Mi
+logLevel: "info"
+podAnnotations:
+  prometheus.io/port: "9598"
+  prometheus.io/scrape: "true"
+containerPorts:
+  - name: metrics
+    containerPort: 9598
+    protocol: TCP
+  - name: api
+    containerPort: 8686
+    protocol: TCP
+haproxy:
+  enabled: true
+  sources:
+    vector_monitoring:
+      type: internal_metrics
+    vector:
+      type: vector
+      address: 0.0.0.0:6000
+      version: "2"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
