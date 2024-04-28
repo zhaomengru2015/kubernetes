@@ -1,0 +1,63 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dummy-logs-json
+  labels:
+    component: test
+spec:
+  parallelism: 5
+  backoffLimit: 4
+  ttlSecondsAfterFinished: 0
+  template:
+    metadata:
+      labels:
+        name: dummy-logs-json
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 2
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+      containers:
+        - name: flog
+          image: mingrammer/flog
+          imagePullPolicy: IfNotPresent
+          command:
+            - flog
+            - -f
+            - json
+            - -b
+            - "524288000"
+      restartPolicy: Never
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dummy-logs-rfc3164
+  labels:
+    component: test
+spec:
+  parallelism: 5
+  backoffLimit: 4
+  ttlSecondsAfterFinished: 0
+  template:
+    metadata:
+      labels:
+        name: dummy-logs-rfc3164
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 2
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+      containers:
+        - name: flog
+          image: mingrammer/flog
+          imagePullPolicy: IfNotPresent
+          command:
+            - flog
+            - -f
+            - rfc3164
+            - -b
+            - "524288000"
+      restartPolicy: Never

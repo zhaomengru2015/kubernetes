@@ -47,12 +47,20 @@ vector:
               .waf = "modsecurity"
           }
     sinks:
-      stdout:
-        type: console
-        inputs: ["vector"]
-        target: stdout
-        encoding:
-          codec: json
+      blackhole_aggregator:
+        type: blackhole
+        inputs:
+          - vector
+          # - <transform>
+        print_interval_secs: 30
+        rate: 100000
+  extraContainers:
+    - name: sleep
+      image: busybox
+      command:
+        - "sh"
+        - "-c"
+        - "while true;do sleep 5; done"
   haproxy:
     enabled: true
     existingConfigMap: vector-aggregator-haproxy
@@ -60,6 +68,13 @@ vector:
       - name: vector
         containerPort: 6000
         protocol: TCP
+    # extraContainers:
+    #   - name: sleep
+    #     image: busybox
+    #     command:
+    #       - "sh"
+    #       - "-c"
+    #       - "while true;do sleep 5; done"
     service:
       ports:
         - name: vector
