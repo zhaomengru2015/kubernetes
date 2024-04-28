@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: vector-haproxy
+  name: vector-aggregator-haproxy
 data:
   haproxy.cfg: |
     global

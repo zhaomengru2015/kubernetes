@@ -4,13 +4,13 @@
 
 ```shell
 helm dependency build
-helm upgrade --install vector .
+helm upgrade --install vector-aggregator .
 ```
 
 ## Upgrade
 
 ```shell
-helm upgrade --install vector .
+helm upgrade --install vector-aggregator .
 ```
 
 ## debug

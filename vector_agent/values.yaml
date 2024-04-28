@@ -13,34 +13,31 @@ vector:
     - name: api
       containerPort: 8686
       protocol: TCP
-  # customConfig:
-  #   data_dir: /vector-data-dir
-  #   api:
-  #     enabled: true
-  #     address: 127.0.0.1:8686
-  #     playground: false
-  #   sources:
-  #     kubernetes_pod_logs:
-  #       type: "kubernetes_logs"
-  #       max_read_bytes: 100000
-  #       ignore_older_secs: 86400 # ignore logs older than 1 day
-  #     vector_monitoring:
-  #       type: internal_metrics
+  customConfig:
+    data_dir: /vector-data-dir
+    api:
+      enabled: true
+      address: 127.0.0.1:8686
+      playground: false
+    sources:
+      kubernetes_pod_logs:
+        type: "kubernetes_logs"
+        max_read_bytes: 100000
+        ignore_older_secs: 86400 # ignore logs older than 1 day
 
-  #   transforms:
-  #     kubernetes_logs_timestamp_added:
-  #       type: remap
-  #       inputs:
-  #         - kubernetes_pod_logs
-  #       source: |-
-  #         # add @timestamp field for calculate latency pipeline
-  #         ."@timestamp"=.timestamp
+    transforms:
+      kubernetes_logs_timestamp_added:
+        type: remap
+        inputs:
+          - kubernetes_pod_logs
+        source: |-
+          # add @timestamp field for calculate latency pipeline
+          ."@timestamp"=.timestamp
 
-  #   sinks:
-  #     stdout:
-  #       type: console
-  #       inputs: ["kubernetes_pod_logs"]
-  #       encoding:
-  #         codec: json
-  haproxy:
-    enabled: true
+    sinks:
+      vector_aggregator:
+        inputs:
+          - kubernetes_pod_logs
+        type: vector
+        address: "vector-aggregator-haproxy.default.svc.cluster.local:6000"
+        version: "2"

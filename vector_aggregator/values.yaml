@@ -55,7 +55,7 @@ vector:
           codec: json
   haproxy:
     enabled: true
-    existingConfigMap: vector-haproxy
+    existingConfigMap: vector-aggregator-haproxy
     containerPorts:
       - name: vector
         containerPort: 6000
