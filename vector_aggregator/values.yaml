@@ -14,7 +14,7 @@ vector:
     prometheus.io/port: "9598"
     prometheus.io/scrape: "true"
   containerPorts:
-    - name: vector
+    - name: api
       containerPort: 8686
       protocol: TCP
     - name: metrics
@@ -23,11 +23,13 @@ vector:
   customConfig:
     data_dir: /vector-data-dir
     api:
-      enabled: false
+      enabled: true
+      address: 127.0.0.1:8686
+      playground: true
     sources:
       vector:
         type: vector
-        address: 0.0.0.0:8686
+        address: 0.0.0.0:6000
         version: "2"
     transforms:
       kubernetes_logs_mutate_fields:
@@ -56,21 +58,14 @@ vector:
     existingConfigMap: vector-haproxy
     containerPorts:
       - name: vector
-        containerPort: 8686
-        protocol: TCP
-      - name: metrics
-        containerPort: 9598
+        containerPort: 6000
         protocol: TCP
     service:
       ports:
         - name: vector
-          port: 8686
+          port: 6000
           protocol: TCP
-          targetPort: 8686
-        - name: metrics
-          port: 9598
-          protocol: TCP
-          targetPort: 9598
+          targetPort: 6000
     resources:
       requests:
         cpu: 100m
