@@ -18,7 +18,7 @@ vector:
     api:
       enabled: true
       address: 127.0.0.1:8686
-      playground: false
+      playground: true
     sources:
       kubernetes_pod_logs:
         type: "kubernetes_logs"
@@ -38,6 +38,7 @@ vector:
       vector_aggregator:
         inputs:
           - kubernetes_pod_logs
-        type: vector
-        address: "vector-aggregator-haproxy.default.svc.cluster.local:6000"
-        version: "2"
+        type: http
+        uri: "http://vector-aggregator-haproxy.default.svc.cluster.local:6000"
+        encoding:
+          codec: json
