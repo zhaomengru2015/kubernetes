@@ -11,8 +11,9 @@ vector:
       memory: 640Mi
   logLevel: "info"
   podAnnotations:
-    prometheus.io/port: "9598"
-    prometheus.io/scrape: "true"
+    "prometheus.io/path": "/metrics"
+    "prometheus.io/port": "9598"
+    "prometheus.io/scrape": "true"
   containerPorts:
     - name: api
       containerPort: 8686
@@ -31,6 +32,8 @@ vector:
         type: vector
         address: 0.0.0.0:6000
         version: "2"
+      vector_monitoring:
+        type: internal_metrics
     transforms:
       kubernetes_logs_mutate_fields:
         type: remap
@@ -51,16 +54,12 @@ vector:
         type: blackhole
         inputs:
           - vector
-          # - <transform>
         print_interval_secs: 30
         rate: 100000
-  # extraContainers:
-  #   - name: sleep
-  #     image: busybox
-  #     command:
-  #       - "sh"
-  #       - "-c"
-  #       - "while true;do sleep 5; done"
+      victoria_metrics:
+        type: prometheus_exporter
+        inputs:
+          - vector_monitoring
   haproxy:
     enabled: true
     existingConfigMap: vector-aggregator-haproxy
@@ -68,13 +67,6 @@ vector:
       - name: vector
         containerPort: 6000
         protocol: TCP
-    # extraContainers:
-    #   - name: sleep
-    #     image: busybox
-    #     command:
-    #       - "sh"
-    #       - "-c"
-    #       - "while true;do sleep 5; done"
     service:
       ports:
         - name: vector

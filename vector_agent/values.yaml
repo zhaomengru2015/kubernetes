@@ -4,8 +4,9 @@ vector:
   role: Agent
   logLevel: "info"
   podAnnotations:
-    prometheus.io/port: "9598"
-    prometheus.io/scrape: "true"
+    "prometheus.io/path": "/metrics"
+    "prometheus.io/port": "9598"
+    "prometheus.io/scrape": "true"
   containerPorts:
     - name: metrics
       containerPort: 9598
@@ -20,6 +21,8 @@ vector:
       address: 127.0.0.1:8686
       playground: true
     sources:
+      vector_monitoring:
+        type: internal_metrics
       kubernetes_pod_logs:
         type: kubernetes_logs
         max_read_bytes: 100000
@@ -43,3 +46,7 @@ vector:
         address: vector-aggregator-haproxy.default.svc.cluster.local:6000
         healthcheck:
           enabled: true
+      victoria_metrics:
+        type: prometheus_exporter
+        inputs:
+          - vector_monitoring
