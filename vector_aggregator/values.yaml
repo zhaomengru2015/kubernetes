@@ -54,13 +54,13 @@ vector:
           # - <transform>
         print_interval_secs: 30
         rate: 100000
-  extraContainers:
-    - name: sleep
-      image: busybox
-      command:
-        - "sh"
-        - "-c"
-        - "while true;do sleep 5; done"
+  # extraContainers:
+  #   - name: sleep
+  #     image: busybox
+  #     command:
+  #       - "sh"
+  #       - "-c"
+  #       - "while true;do sleep 5; done"
   haproxy:
     enabled: true
     existingConfigMap: vector-aggregator-haproxy

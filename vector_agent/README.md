@@ -21,6 +21,12 @@ helm upgrade --install vector-agent .
 helm template vector . --debug
 ```
 
+2. generate workloads
+
+```shell
+k apply -f workloads/vector_test
+```
+
 ## Uninstall
 
 ```shell

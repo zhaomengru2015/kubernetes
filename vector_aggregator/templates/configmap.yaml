@@ -37,7 +37,7 @@ data:
 
     frontend vector
       mode http
-      bind :::8686 proto h2
+      bind :::6000 proto h2
       option httplog
       default_backend vector
 
