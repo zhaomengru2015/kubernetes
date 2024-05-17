@@ -1,0 +1,5 @@
+{
+  "namespace": "ingress-nginx",
+  "project": "cluster-services",
+  "baseValuesPath": "../../../../infra-base/services/ingress-nginx/values-base.yaml"
+}

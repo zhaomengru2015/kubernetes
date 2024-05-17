@@ -1,0 +1,6 @@
+ingress-nginx:
+  rbac:
+    create: true
+  controller:
+    service:
+      loadBalancerIP: 32.20.10.10
