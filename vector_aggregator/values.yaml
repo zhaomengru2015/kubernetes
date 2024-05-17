@@ -1,4 +1,5 @@
 vector:
+  replicas: 2
   nameOverride: "vector-aggregator"
   fullnameOverride: "vector-aggregator"
   role: Aggregator
@@ -34,21 +35,21 @@ vector:
         version: "2"
       vector_monitoring:
         type: internal_metrics
-    transforms:
-      kubernetes_logs_mutate_fields:
-        type: remap
-        inputs:
-          - vector
-        source: |-
-          log_message = .message
+    # transforms:
+    #   kubernetes_logs_mutate_fields:
+    #     type: remap
+    #     inputs:
+    #       - vector
+    #     source: |-
+    #       log_message = .message
 
-          # add lf_dc_name field from env var for all logs
-          .lf_dc_name = get_env_var!("lf_dc_name")
+    #       # add lf_dc_name field from env var for all logs
+    #       .lf_dc_name = get_env_var!("lf_dc_name")
 
-          #TODO: mutations for modesecurity logs, is it still needed?
-          if .kubernetes.pod_namespace == "ingress-nginx" && contains!(log_message, "modsecurity") {
-              .waf = "modsecurity"
-          }
+    #       #TODO: mutations for modesecurity logs, is it still needed?
+    #       if .kubernetes.pod_namespace == "ingress-nginx" && contains!(log_message, "modsecurity") {
+    #           .waf = "modsecurity"
+    #       }
     sinks:
       blackhole_aggregator:
         type: blackhole
@@ -60,6 +61,16 @@ vector:
         type: prometheus_exporter
         inputs:
           - vector_monitoring
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: vector-aggregator-haproxy.dc35.azr.lotusflare.info
+        paths:
+          - path: /
+            pathType: "ImplementationSpecific"
+            port:
+              number: "6000"
   haproxy:
     enabled: true
     existingConfigMap: vector-aggregator-haproxy

@@ -39,6 +39,7 @@ data:
       mode http
       bind :::6000 proto h2
       option httplog
+      option accept-invalid-http-request
       default_backend vector
 
     backend vector
